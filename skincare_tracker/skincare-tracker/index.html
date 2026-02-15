@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Skincare Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="card">
+  <h1>🌸 Skincare Tracker</h1>
+
+  <h3>Morning Routine</h3>
+  <label><input type="checkbox" class="morning"> Cleanser</label>
+  <label><input type="checkbox" class="morning"> Toner</label>
+  <label><input type="checkbox" class="morning"> Serum</label>
+  <label><input type="checkbox" class="morning"> Sunscreen</label>
+
+  <h3>Night Routine</h3>
+  <label><input type="checkbox" class="night"> Cleanser</label>
+  <label><input type="checkbox" class="night"> Treatment</label>
+  <label><input type="checkbox" class="night"> Moisturizer</label>
+
+  <h3>Skin Notes</h3>
+  <textarea id="notes" placeholder="Acne? Glow? Dryness?"></textarea>
+
+  <button onclick="saveDay()">Save Today ✨</button>
+
+  <div class="stats">
+    <p>🔥 Streak: <span id="streak">0</span> days</p>
+    <p>📅 Days Logged: <span id="days">0</span></p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
