@@ -7,6 +7,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from langchain.prompts import PromptTemplate
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -53,15 +54,52 @@ def build_vector_store(documents):
     return FAISS.from_documents(chunks, embeddings)
 
 
+# def get_qa_chain(store):
+#     """Create a RetrievalQA chain from the vector store."""
+#     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+#     chain = RetrievalQA.from_chain_type(
+#         llm=llm,
+#         chain_type="stuff",
+#         retriever=store.as_retriever(search_kwargs={"k": 3}),
+#         return_source_documents=True,
+#     )
+#     return chain
+
+
+# FEATURE 1: Custom prompt for the LLM to only use provided context when answering questions, and to respond with "I don't know" if the answer is not found in the context.
+# """LLM: "ONLY use context, otherwise say I don’t know"""
 def get_qa_chain(store):
-    """Create a RetrievalQA chain from the vector store."""
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+
+    # Custom prompt
+    template = """
+You are a helpful assistant.
+
+Use ONLY the following context to answer the question.
+If the answer is not in the context, say "I don't know."
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+    prompt = PromptTemplate(
+        template=template,
+        input_variables=["context", "question"]
+    )
+
     chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
         retriever=store.as_retriever(search_kwargs={"k": 3}),
         return_source_documents=True,
+        chain_type_kwargs={"prompt": prompt}  # 👈 IMPORTANT
     )
+
     return chain
 
 # --------------- routes ---------------
